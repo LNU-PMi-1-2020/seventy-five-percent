@@ -33,15 +33,6 @@ short Printer::rgb2NC(int rgb) {
     return short(double(rgb) * 3.90625);
 }
 
-void Printer::verticalCenter(WINDOW *win, int yPos, const char *text) {
-    int len = strlen(text);
-
-    int xMax = getmaxx(win);
-    int xPos = xMax / 2 - len / 2;
-
-    mvwprintw(win, yPos, xPos, text);
-}
-
 void Printer::center(WINDOW *win, const char *text, bool unicode) {
     int xMax = getmaxx(win);
     int yMax = getmaxy(win);
@@ -50,6 +41,15 @@ void Printer::center(WINDOW *win, const char *text, bool unicode) {
 
     int yPos = yMax / 2;
     int xPos = (xMax - len) / 2;
+
+    mvwprintw(win, yPos, xPos, text);
+}
+
+void Printer::verticalCenter(WINDOW *win, int yPos, const char *text) {
+    int len = strlen(text);
+
+    int xMax = getmaxx(win);
+    int xPos = xMax / 2 - len / 2;
 
     mvwprintw(win, yPos, xPos, text);
 }
