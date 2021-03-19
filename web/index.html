@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>75%</title>
+
+<!--    <base href="/SeventyFivePercent_WEB/">-->
+
+    <link rel="apple-touch-icon" sizes="180x180" href="img/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16x16.png">
+    <link rel="manifest" href="site.webmanifest">
+
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&family=IBM+Plex+Sans&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="p-5 container bg-light">
+
+<div class="card">
+    <div class="card-body">
+        <button id="get" class="btn btn-outline-primary mb-3">Зберегти у файл</button>
+
+        <form id="form">
+            <div id="parties"></div>
+
+            <button type="button" id="party-add" class="btn btn-outline-success">Додати партію</button>
+        </form>
+    </div>
+</div>
+
+<script src="js/bootstrap.bundle.min.js"></script>
+<script src="js/jquery.min.js"></script>
+<script>
+    function download(filename, text) {
+        let element = document.createElement('a');
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+        element.setAttribute('download', filename);
+
+        element.style.display = 'none';
+        document.body.appendChild(element);
+
+        element.click();
+
+        document.body.removeChild(element);
+    }
+
+    $(document).ready(function () {
+        $(window).bind('beforeunload', function () {
+            return "Точно вийти?";
+        });
+
+        let ptCount = 0;
+        let lvCount = [];
+        let cdCount = [];
+
+        $("#get").on('click', function () {
+            let res = $("#form").serializeArray();
+            let jsonRes = {
+                "parties": []
+            };
+
+            for (i in res) {
+                let ids = res[i].name.split('-');
+                let value = res[i].value;
+                if (ids.length === 2) {
+                    jsonRes.parties.push({
+                        "party": value,
+                        "levels": []
+                    });
+                } else if (ids.length === 3) {
+                    jsonRes.parties[parseInt(ids[1])].levels.push({
+                        "level": value,
+                        "cards": []
+                    });
+                } else if (ids.length === 5) {
+                    let c = jsonRes.parties[parseInt(ids[1])].levels[parseInt(ids[2])].cards;
+                    if (!c.hasOwnProperty(parseInt(ids[3]))) {
+                        c[parseInt(ids[3])] = {};
+                    }
+                    if (!isNaN(value)) {
+                        value = parseInt(value);
+                    }
+                    c[parseInt(ids[3])][ids[4]] = value;
+
+                    jsonRes.parties[parseInt(ids[1])].levels[parseInt(ids[2])].cards = jsonRes.parties[parseInt(ids[1])].levels[parseInt(ids[2])].cards.flat();
+                }
+            }
+
+            download("cards.json", JSON.stringify(jsonRes, null, '\t'));
+        });
+
+        let parties = $("#parties");
+
+        $("#party-add").on('click', function () {
+            lvCount[ptCount] = 0;
+            cdCount[ptCount] = [];
+
+            let party = `
+<div class="card mb-3" id="party-container-${ptCount}">
+    <div class="card-body">
+        <div class="input-group mb-2">
+            <label for="party[${ptCount}]" class="input-group-text">Партія</label>
+            <input type="text" id="party[${ptCount}]" name="data-${ptCount}" class="form-control" placeholder="Назва партії" required>
+        </div>
+        <div>
+            <button type="button" data-id="${ptCount}" data-hidden="false" class="party-hide btn btn-outline-dark">Згорнути</button>
+            <button type="button" data-id="${ptCount}" class="party-delete btn btn-outline-danger">Видалити</button>
+        </div>
+        <div class="ps-4">
+            <br>
+            <div class="levels"></div>
+
+            <button type="button" data-id="${ptCount}" class="level-add btn btn-outline-success">Додати рівень</button>
+        </div>
+    </div>
+</div>
+            `;
+            parties.append(party);
+
+            $(`.party-delete[data-id='${ptCount}`).on('click', function () {
+                let partyId = $(this).data("id");
+                let ok = confirm("Точно видалити?");
+                if (ok) {
+                    $("#party-container-" + partyId).remove();
+                    cdCount[partyId] = [];
+                    lvCount[partyId] = 0;
+                    ptCount--;
+                }
+            });
+
+            $(`.party-hide[data-id='${ptCount}`).on('click', function () {
+                let partyId = $(this).data("id");
+                let hidden = $(this).data("hidden");
+                let sh = $("#party-container-" + partyId + " .ps-4");
+
+                if (hidden) {
+                    sh.show("slow");
+                    $(this).data("hidden", false);
+                } else {
+                    sh.hide("slow");
+                    $(this).data("hidden", true);
+                }
+            });
+
+            $(`.level-add[data-id='${ptCount}']`).on('click', function () {
+                let partyId = $(this).data("id");
+
+                cdCount[partyId][lvCount[partyId]] = 0;
+
+                let levels = $(this).parent().children(".levels");
+
+                let level = `
+<div class="mb-3" id="level-container-${partyId}-${lvCount[parseInt(partyId)]}">
+    <div class="input-group mb-2">
+        <label for="level-${partyId}-${lvCount[parseInt(partyId)]}" class="input-group-text">Рівень</label>
+        <input type="number" min="1" step="1" value="${lvCount[parseInt(partyId)] + 1}" id="level-${partyId}-${lvCount[parseInt(partyId)]}" class="form-control"
+               placeholder="Рівень" name="data-${partyId}-${lvCount[parseInt(partyId)]}" required>
+    </div>
+    <div>
+        <button type="button" data-id="${partyId}-${lvCount[parseInt(partyId)]}" data-hidden="false" class="level-hide btn btn-outline-dark">Згорнути</button>
+        <button type="button" data-id="${partyId}-${lvCount[parseInt(partyId)]}" class="level-delete btn btn-outline-danger">Видалити</button>
+    </div>
+    <div class="ps-4">
+        <br>
+        <div class="cards"></div>
+
+        <button type="button" data-id="${partyId}-${lvCount[parseInt(partyId)]}" class="card-add btn btn-outline-success">Додати карту</button>
+    </div>
+</div>
+`;
+
+                levels.append(level);
+
+                $(`.level-delete[data-id='${partyId}-${lvCount[parseInt(partyId)]}`).on('click', function () {
+                    let levelId = $(this).data("id");
+                    let ok = confirm("Точно видалити?");
+                    if (ok) {
+                        $("#level-container-" + levelId).remove();
+
+                        let ids = levelId.split('-')
+                        cdCount[parseInt(ids[0])][parseInt(ids[1])] = 0;
+                        lvCount[parseInt(ids[0])]--;
+                    }
+                });
+
+                $(`.level-hide[data-id='${partyId}-${lvCount[partyId]}`).on('click', function () {
+                    let levelId = $(this).data("id");
+                    let hidden = $(this).data("hidden");
+                    let sh = $("#level-container-" + levelId + " .ps-4");
+
+                    if (hidden) {
+                        sh.show("slow");
+                        $(this).data("hidden", false);
+                    } else {
+                        sh.hide("slow");
+                        $(this).data("hidden", true);
+                    }
+                });
+
+                $(`.card-add[data-id='${partyId}-${lvCount[parseInt(partyId)]}']`).on('click', function () {
+                    let cards = $(this).parent().children(".cards");
+                    let cardId = $(this).data("id");
+                    let ids = cardId.split('-');
+                    let cId = `${ids[0]}-${ids[1]}-${cdCount[parseInt(ids[0])][parseInt(ids[1])]}`;
+
+
+                    let card = `
+<div id="card-container-${cId}">
+    <div class="input-group mb-2">
+        <label for="card-fn-${cId}" class="input-group-text"
+               style="width: 7rem;">Ім'я</label>
+        <input type="text" id="card-fn-${cId}" class="form-control" placeholder="Ім'я"
+               required name="data-${cId}-firstName">
+    </div>
+    <div class="input-group mb-2">
+        <label for="card-ln-${cId}" class="input-group-text"
+               style="width: 7rem;">Прізвище</label>
+        <input type="text" id="card-ln-${cId}" class="form-control" placeholder="Прізвище"
+               required name="data-${cId}-lastName">
+    </div>
+    <div class="input-group mb-2">
+        <label for="card-mn-${cId}" class="input-group-text"
+               style="width: 7rem;">Побатькові</label>
+        <input type="text" id="card-mn-${cId}" class="form-control" placeholder="Побатькові"
+               required name="data-${cId}-middleName">
+    </div>
+    <div class="input-group mb-2">
+        <label for="card-m-${cId}" class="input-group-text" style="width: 7rem;">Мана</label>
+        <input type="number" min="0" step="1" value="1" id="card-m-${cId}" class="form-control"
+               placeholder="Мана" required name="data-${cId}-mana">
+    </div>
+    <div class="input-group mb-2">
+        <label for="card-s-${cId}" class="input-group-text" style="width: 7rem;">Сила</label>
+        <input type="number" min="0" step="1" value="1" id="card-s-${cId}" class="form-control"
+               placeholder="Сила" required name="data-${cId}-strength">
+    </div>
+    <div class="input-group mb-2">
+        <label for="card-l-${cId}" class="input-group-text"
+               style="width: 7rem;">Удача</label>
+        <input type="number" min="0" step="1" value="1" id="card-l-${cId}" class="form-control"
+               placeholder="Удача" required name="data-${cId}-luck">
+    </div>
+    <div class="input-group mb-2">
+        <label for="card-d-${cId}" class="input-group-text"
+               style="width: 7rem;">Опис</label>
+        <input type="text" id="card-d-${cId}" class="form-control"
+               placeholder="Опис" required name="data-${cId}-description">
+    </div>
+
+    <button type="button" data-id="${cId}" class="card-delete btn btn-outline-danger">Видалити</button>
+
+    <hr>
+<div>
+`;
+
+                    cards.append(card);
+
+                    $(`.card-delete[data-id='${cId}`).on('click', function () {
+                        let cardId = $(this).data("id");
+                        let ok = confirm("Точно видалити?");
+                        if (ok) {
+                            $("#card-container-" + cardId).remove();
+
+                            let ids = cardId.split('-');
+                            cdCount[parseInt(ids[0])][parseInt(ids[1])]--;
+                        }
+                    });
+
+                    cdCount[parseInt(ids[0])][parseInt(ids[1])]++;
+                });
+
+                lvCount[parseInt(partyId)]++;
+            });
+
+            ptCount++;
+        });
+    });
+</script>
+</body>
+</html>
