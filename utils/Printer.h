@@ -15,6 +15,10 @@ public:
     static const int TITLE_LOGO_COLS;
     static const int TITLE_LOGO_LINES;
 
+    static void init();
+
+    static void close();
+
     static void initCustomColors();
 
     static short rgb2NC(int rgb);

@@ -1,4 +1,5 @@
 #include "Printer.h"
+#include <clocale>
 
 const char *Printer::TITLE_LOGO[] = {
         R"($$$$$$$$\ $$$$$$$\  $$\   $$\ )",
@@ -52,4 +53,30 @@ void Printer::verticalCenter(WINDOW *win, int yPos, const char *text) {
     int xPos = xMax / 2 - len / 2;
 
     mvwprintw(win, yPos, xPos, text);
+}
+
+void Printer::init() {
+    setlocale(LC_ALL, "");
+
+    initscr();
+    cbreak();
+    noecho();
+    curs_set(0);
+
+    if (!has_colors()) {
+        Printer::center(stdscr, "No colors support in your terminal, sorry.");
+        Printer::verticalCenter(stdscr, LINES - 2, "Press any key to exit");
+        getch();
+        exit(1);
+    }
+
+    start_color();
+
+    if (can_change_color()) {
+        Printer::initCustomColors();
+    }
+}
+
+void Printer::close() {
+    endwin();
 }

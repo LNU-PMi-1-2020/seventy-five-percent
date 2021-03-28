@@ -5,7 +5,8 @@
 #include "../utils/Drawable.h"
 
 class Enemy : public Drawable {
-
+public:
+    void draw() override;
 };
 
 

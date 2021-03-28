@@ -5,7 +5,8 @@
 #include "../utils/Drawable.h"
 
 class Menu : public Drawable {
-
+public:
+    void draw() override;
 };
 
 
