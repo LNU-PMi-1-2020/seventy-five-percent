@@ -10,5 +10,5 @@ file(GLOB SOURCE_FILES
         "game/*.cpp"
         )
 
-add_executable(${PROJECT_NAME} main.cpp ${SOURCE_FILES})
+add_executable(${PROJECT_NAME} main.cpp ${SOURCE_FILES} game/CardController.cpp game/CardController.h)
 target_link_libraries(${PROJECT_NAME} ncursesw)

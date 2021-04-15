@@ -10,17 +10,19 @@ private:
     Game() = default;
 
 public:
-    static std::map<const std::string, Box *> boxs;
+    static Game &get();
 
-    static void init();
+    Game &operator=(Game &) = delete;
 
-    static void stop();
+    std::map<const std::string, Box *> boxes;
 
-    static void run();
+    void init();
 
-//    https://github.com/tony/NCURSES-Programming-HOWTO-examples/blob/master/16-panels/show-hide.c
+    void stop();
+
+    void run();
+
 };
-
 
 #endif //SEVENTY_FIVE_PERCENT_GAME_H
 

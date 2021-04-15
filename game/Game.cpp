@@ -1,10 +1,18 @@
 #include "Game.h"
 #include <ncurses.h>
 #include "../utils/Printer.h"
+#include "CardController.h"
+
+Game &Game::get() {
+    static Game game;
+    return game;
+}
 
 void Game::init() {
     Printer::init();
-//    boxs["main"] = new Box("main");
+    boxes["main"] = new Box("main");
+
+    CardController::get().loadCards();
 }
 
 void Game::stop() {
@@ -12,36 +20,34 @@ void Game::stop() {
 }
 
 void Game::run() {
-//    boxs["title"] = new Box("title", boxs["name"], Printer::TITLE_LOGO_COLS + 8, Printer::TITLE_LOGO_LINES + 4, )
-
-    WINDOW *titleWin = newwin(Printer::TITLE_LOGO_LINES + 4, Printer::TITLE_LOGO_COLS + 8, 2,
-                              COLS / 2 - (Printer::TITLE_LOGO_COLS + 8) / 2);
+    boxes["title"] = new Box("title", boxes["main"], .5, .2,
+                             Printer::TITLE_LOGO_COLS + 8, Printer::TITLE_LOGO_LINES + 4);
     refresh();
 
-    box(titleWin, 0, 0);
+    Box *titleBox = boxes["title"];
 
-    init_pair(1, COLOR_YELLOW, COLOR_BLACK);
-    wattron(titleWin, COLOR_PAIR(1));
+    titleBox->drawBorder();
+    titleBox->setColor(Printer::COLOR_YELLOW_BLACK);
     for (int i = 0; i < Printer::TITLE_LOGO_LINES; ++i) {
-        Printer::verticalCenter(titleWin, i + 2, Printer::TITLE_LOGO[i]);
+        titleBox->verticalCenterText(i + 2, Printer::TITLE_LOGO[i]);
     }
-    wattroff(titleWin, COLOR_PAIR(1));
+    titleBox->setColor(Printer::COLOR_YELLOW_BLACK);
 
-    wrefresh(titleWin);
+    titleBox->refresh();
 
-    WINDOW *menuText1 = newwin(3, 15, LINES / 3 + 7, COLS / 2 - 8);
+    boxes["playButton"] = new Box("playButton", boxes["main"], .5, .45, 15, 3);
     refresh();
 
-    box(menuText1, 0, 0);
-    Printer::center(menuText1, "Грати", true);
-    wrefresh(menuText1);
+    boxes["playButton"]->drawBorder();
+    boxes["playButton"]->centerText("Грати", true);
+    boxes["playButton"]->refresh();
 
-    WINDOW *menuText2 = newwin(3, 15, LINES / 3 + 10, COLS / 2 - 8);
+    boxes["exitButton"] = new Box("exitButton", boxes["main"], .5, .50, 15, 3);
     refresh();
 
-    box(menuText2, 0, 0);
-    Printer::center(menuText2, "Вийти", true);
-    wrefresh(menuText2);
+    boxes["exitButton"]->drawBorder();
+    boxes["exitButton"]->centerText("Вийти", true);
+    boxes["exitButton"]->refresh();
 
     getch();
 }

@@ -3,3 +3,8 @@
 void Player::draw() {
 
 }
+
+Player &Player::get() {
+    static Player player;
+    return player;
+}

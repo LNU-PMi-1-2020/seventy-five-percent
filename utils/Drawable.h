@@ -1,7 +1,6 @@
 #ifndef SEVENTY_FIVE_PERCENT_DRAWABLE_H
 #define SEVENTY_FIVE_PERCENT_DRAWABLE_H
 
-
 #include <ncurses.h>
 
 class Drawable {
@@ -13,6 +12,5 @@ public:
 
     WINDOW *getWin() const;
 };
-
 
 #endif //SEVENTY_FIVE_PERCENT_DRAWABLE_H

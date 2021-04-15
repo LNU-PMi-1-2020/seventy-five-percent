@@ -13,21 +13,35 @@ private:
     Box *parent = nullptr;
 
 public:
-    explicit Box(const string name);
+    explicit Box(string name);
 
-    Box(const string name, Box *parent, int x, int y, int width, int height);
+    Box(string name, Box *parent, int x, int y, int width, int height);
 
-    Box(const string name, Box *parent, int x, int y, double widthPercent, double heightPercent);
+    Box(const string &name, Box *parent, int x, int y, double widthPercent, double heightPercent);
 
-    Box(const string name, Box *parent, double xPercent, double yPercent, int width, int height);
+    Box(const string &name, Box *parent, double xPercent, double yPercent, int width, int height);
 
-    Box(const string name, Box *parent, double xPercent, double yPercent, double widthPercent, double heightPercent);
+    Box(const string &name, Box *parent, double xPercent, double yPercent, double widthPercent, double heightPercent);
 
     const string &getName() const;
 
     WINDOW *getWin() const;
 
     Box *getParent() const;
+
+    void setColor(int color) const;
+
+    void unsetColor(int color) const;
+
+    string desc() const;
+
+    void centerText(const string &text, bool unicode = false);
+
+    void verticalCenterText(int yPos, const string &text, bool unicode = false);
+
+    void drawBorder(int x = 0, int y = 0);
+
+    void refresh();
 };
 
 

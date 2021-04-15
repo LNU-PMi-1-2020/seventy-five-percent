@@ -34,7 +34,7 @@ short Printer::rgb2NC(int rgb) {
     return short(double(rgb) * 3.90625);
 }
 
-void Printer::center(WINDOW *win, const char *text, bool unicode) {
+void Printer::centerText(WINDOW *win, const char *text, bool unicode) {
     int xMax = getmaxx(win);
     int yMax = getmaxy(win);
 
@@ -46,8 +46,8 @@ void Printer::center(WINDOW *win, const char *text, bool unicode) {
     mvwprintw(win, yPos, xPos, text);
 }
 
-void Printer::verticalCenter(WINDOW *win, int yPos, const char *text) {
-    int len = strlen(text);
+void Printer::verticalCenterText(WINDOW *win, int yPos, const char *text, bool unicode) {
+    int len = int(strlen(text)) / (unicode ? 2 : 1);
 
     int xMax = getmaxx(win);
     int xPos = xMax / 2 - len / 2;
@@ -64,8 +64,8 @@ void Printer::init() {
     curs_set(0);
 
     if (!has_colors()) {
-        Printer::center(stdscr, "No colors support in your terminal, sorry.");
-        Printer::verticalCenter(stdscr, LINES - 2, "Press any key to exit");
+        centerText(stdscr, "No colors support in your terminal, sorry.");
+        verticalCenterText(stdscr, LINES - 2, "Press any key to exit");
         getch();
         exit(1);
     }
@@ -73,10 +73,16 @@ void Printer::init() {
     start_color();
 
     if (can_change_color()) {
-        Printer::initCustomColors();
+        initCustomColors();
     }
+
+    initColors();
 }
 
 void Printer::close() {
     endwin();
+}
+
+void Printer::initColors() {
+    init_pair(COLOR_YELLOW_BLACK, COLOR_YELLOW, COLOR_BLACK);
 }
