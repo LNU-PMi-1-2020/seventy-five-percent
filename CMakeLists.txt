@@ -8,6 +8,8 @@ file(GLOB SOURCE_FILES
         "utils/*.cpp"
         "game/*.h"
         "game/*.cpp"
+        "game/menu/*.h"
+        "game/menu/*.cpp"
         )
 
 add_executable(${PROJECT_NAME} main.cpp ${SOURCE_FILES})

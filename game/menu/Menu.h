@@ -4,37 +4,18 @@
 #include <iostream>
 #include <map>
 #include <vector>
-#include "../utils/Box.h"
+#include "../../utils/Box.h"
+#include "MenuOption.h"
 
 using std::string;
-
-class MenuOption {
-private:
-    size_t id;
-    Box *box;
-    string text;
-    bool hasBorder;
-    bool selected = false;
-
-public:
-    MenuOption(int id, Box *box, string text, bool hasBorder = true);
-
-    void draw();
-
-    void redraw();
-
-    bool isSelected() const;
-
-    void setSelected(bool isSelected);
-
-    size_t getId() const;
-};
 
 class Menu {
 private:
     Menu() = default;
 
 public:
+    typedef void (*handler)();
+
     static Menu &get();
 
     Menu &operator=(Menu &) = delete;
@@ -52,6 +33,8 @@ public:
     void unselect();
 
     size_t getSelected();
+
+    size_t handleMenu(bool isHorizontal = false);
 };
 
 #endif //SEVENTY_FIVE_PERCENT_MENU_H

@@ -2,8 +2,10 @@
 #include <ncurses.h>
 #include "../utils/Printer.h"
 #include "CardController.h"
-#include "Menu.h"
+#include "menu/Menu.h"
 #include "Player.h"
+#include "menu/MenuOption.h"
+#include "menu/TextMenuOption.h"
 
 Game &Game::get() {
     static Game game;
@@ -58,34 +60,15 @@ void Game::drawMainScreen() {
         refresh();
 
         m.menus["main"] = {
-                new MenuOption(1, boxes["playButton"], "Грати"),
-                new MenuOption(2, boxes["exitButton"], "Вийти")
+                new TextMenuOption(boxes["playButton"], "Грати"),
+                new TextMenuOption(boxes["exitButton"], "Вийти")
         };
     }
 
     m.currentlyActive = "main";
     m.draw();
 
-    int key = getch();
-    size_t selected = m.getSelected();
-    while (true) {
-        if ((key == 10 && selected != 0) || (key == 27 && selected == 0)) {
-            break;
-        }
-
-        if (key == KEY_DOWN) {
-            m.next();
-        } else if (key == KEY_UP) {
-            m.prev();
-        } else if (key == 27) {
-            m.unselect();
-        }
-
-        key = getch();
-        selected = m.getSelected();
-    }
-
-    if (selected == 1) {
+    if (m.handleMenu() == 1) {
         if (Player::get().newGame) {
             drawNewGameScreen();
         } else {
