@@ -47,20 +47,20 @@ string Box::desc() const {
            std::to_string(h);
 }
 
-void Box::setColor(const int color) const {
-    wattron(win, COLOR_PAIR(color));
+void Box::setColor(const int color, bool is) const {
+    if (is) {
+        wattron(win, COLOR_PAIR(color));
+    } else {
+        wattroff(win, COLOR_PAIR(color));
+    }
 }
 
-void Box::unsetColor(const int color) const {
-    wattroff(win, COLOR_PAIR(color));
+void Box::centerText(const string &text) {
+    Printer::centerText(win, text.c_str());
 }
 
-void Box::centerText(const string &text, bool unicode) {
-    Printer::centerText(win, text.c_str(), unicode);
-}
-
-void Box::verticalCenterText(int yPos, const string &text, bool unicode) {
-    Printer::verticalCenterText(win, yPos, text.c_str(), unicode);
+void Box::verticalCenterText(int yPos, const string &text) {
+    Printer::verticalCenterText(win, yPos, text.c_str());
 }
 
 void Box::drawBorder(int x, int y) {
@@ -69,4 +69,12 @@ void Box::drawBorder(int x, int y) {
 
 void Box::refresh() {
     wrefresh(win);
+}
+
+void Box::setStandout(bool is) const {
+    if (is) {
+        wattron(win, A_STANDOUT);
+    } else {
+        wattroff(win, A_STANDOUT);
+    }
 }

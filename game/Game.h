@@ -9,7 +9,15 @@ class Game {
 private:
     Game() = default;
 
+    void drawMainScreen();
+
+    void drawNewGameScreen();
+
+    void drawContinueGameScreen();
+
 public:
+    const string VERSION = "0.1";
+
     static Game &get();
 
     Game &operator=(Game &) = delete;

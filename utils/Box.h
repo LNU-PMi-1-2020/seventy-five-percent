@@ -29,15 +29,15 @@ public:
 
     Box *getParent() const;
 
-    void setColor(int color) const;
+    void setColor(int color, bool is) const;
 
-    void unsetColor(int color) const;
+    void setStandout(bool is) const;
 
     string desc() const;
 
-    void centerText(const string &text, bool unicode = false);
+    void centerText(const string &text);
 
-    void verticalCenterText(int yPos, const string &text, bool unicode = false);
+    void verticalCenterText(int yPos, const string &text);
 
     void drawBorder(int x = 0, int y = 0);
 

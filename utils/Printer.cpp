@@ -34,11 +34,11 @@ short Printer::rgb2NC(int rgb) {
     return short(double(rgb) * 3.90625);
 }
 
-void Printer::centerText(WINDOW *win, const char *text, bool unicode) {
+void Printer::centerText(WINDOW *win, const char *text) {
     int xMax = getmaxx(win);
     int yMax = getmaxy(win);
 
-    int len = int(strlen(text)) / (unicode ? 2 : 1);
+    int len = utf8len(text);
 
     int yPos = yMax / 2;
     int xPos = (xMax - len) / 2;
@@ -46,8 +46,8 @@ void Printer::centerText(WINDOW *win, const char *text, bool unicode) {
     mvwprintw(win, yPos, xPos, text);
 }
 
-void Printer::verticalCenterText(WINDOW *win, int yPos, const char *text, bool unicode) {
-    int len = int(strlen(text)) / (unicode ? 2 : 1);
+void Printer::verticalCenterText(WINDOW *win, int yPos, const char *text) {
+    int len = utf8len(text);
 
     int xMax = getmaxx(win);
     int xPos = xMax / 2 - len / 2;
@@ -62,6 +62,15 @@ void Printer::init() {
     cbreak();
     noecho();
     curs_set(0);
+    keypad(stdscr, true);
+    set_escdelay(0);
+
+    if (LINES < 32 || COLS < 108) {
+        centerText(stdscr, "Your terminal should be at least 108x32, sorry.");
+        verticalCenterText(stdscr, LINES - 2, "Press any key to exit");
+        getch();
+        exit(1);
+    }
 
     if (!has_colors()) {
         centerText(stdscr, "No colors support in your terminal, sorry.");
@@ -85,4 +94,21 @@ void Printer::close() {
 
 void Printer::initColors() {
     init_pair(COLOR_YELLOW_BLACK, COLOR_YELLOW, COLOR_BLACK);
+}
+
+size_t Printer::utf8len(const char *const str) {
+    size_t len = 0;
+    unsigned char c = str[0];
+    for (size_t i = 1; c != 0; ++len, ++i) {
+        if ((c & 0x80)) {
+            if (c < 0xC0)
+                return 0;
+            c >>= 4;
+            if (c == 12)
+                c++;
+            i += c - 12;
+        }
+        c = str[i];
+    }
+    return len;
 }

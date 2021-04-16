@@ -26,9 +26,11 @@ public:
 
     static short rgb2NC(int rgb);
 
-    static void centerText(WINDOW *win, const char *text, bool unicode = false);
+    static void centerText(WINDOW *win, const char *text);
 
-    static void verticalCenterText(WINDOW *win, int yPos, const char *text, bool unicode = false);
+    static void verticalCenterText(WINDOW *win, int yPos, const char *text);
+
+    static size_t utf8len(const char *const str);
 };
 
 #endif //SEVENTY_FIVE_PERCENT_PRINTER_H
