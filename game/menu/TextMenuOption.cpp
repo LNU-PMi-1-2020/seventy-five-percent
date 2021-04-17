@@ -1,14 +1,9 @@
 #include "TextMenuOption.h"
 
-TextMenuOption::TextMenuOption(Box *box, string text, bool hasBorder) : box(box), text(std::move(text)),
-                                                                hasBorder(hasBorder) {}
-
-bool TextMenuOption::isSelected() const {
-    return selected;
-}
-
-void TextMenuOption::setSelected(bool isSelected) {
-    TextMenuOption::selected = isSelected;
+TextMenuOption::TextMenuOption(Box *box, string text, void (*onPress)(), bool hasBorder) : box(box),
+                                                                                           text(std::move(text)),
+                                                                                           hasBorder(hasBorder) {
+    f = onPress;
 }
 
 void TextMenuOption::draw() {

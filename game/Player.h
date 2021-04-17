@@ -16,6 +16,8 @@ public:
 
     Player &operator=(Player &) = delete;
 
+    Player(const Player &) = delete;
+
     void loadPlayer();
 };
 

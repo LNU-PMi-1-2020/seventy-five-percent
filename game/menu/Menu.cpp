@@ -5,12 +5,12 @@ Menu &Menu::get() {
     return menu;
 }
 
-void Menu::next() {
+void Menu::next(bool ignoreESC) {
     auto options = menus[currentlyActive];
     auto selected = std::find_if(options.begin(), options.end(), [](const MenuOption *mo) { return mo->isSelected(); });
 
     if (selected == options.end()) {
-        auto o = options[0];
+        auto o = options[ignoreESC ? 0 : 1];
         o->setSelected(true);
         o->redraw();
     } else {
@@ -19,17 +19,21 @@ void Menu::next() {
         options[i]->redraw();
 
         i = (i + 1) % options.size();
+        if (!ignoreESC && i == 0) {
+            i++;
+        }
+
         options[i]->setSelected(true);
         options[i]->redraw();
     }
 }
 
-void Menu::prev() {
+void Menu::prev(bool ignoreESC) {
     auto &options = menus[currentlyActive];
     auto selected = std::find_if(options.begin(), options.end(), [](const MenuOption *mo) { return mo->isSelected(); });
 
     if (selected == options.end()) {
-        auto o = options[0];
+        auto o = options[options.size() - 1];
         o->setSelected(true);
         o->redraw();
     } else {
@@ -37,10 +41,12 @@ void Menu::prev() {
         options[i]->setSelected(false);
         options[i]->redraw();
 
-        i = (i - 1) % options.size();
-        if (i < 0) {
-            i += options.size();
+        if (i == 0 || !ignoreESC && i == 1) {
+            i = options.size() - 1;
+        } else {
+            i--;
         }
+
         options[i]->setSelected(true);
         options[i]->redraw();
     }
@@ -69,25 +75,29 @@ size_t Menu::getSelected() {
     return (selected == options.end() ? 0 : (selected - options.begin() + 1));
 }
 
-size_t Menu::handleMenu(bool isHorizontal) {
+void Menu::handleMenu(bool isHorizontal, bool ignoreESC) {
     int key = getch();
     size_t selected = getSelected();
     while (true) {
-        if ((key == 10 && selected != 0) || (key == 27 && selected == 0)) {
+        if (key == 10 && selected != 0) {
+            menus[currentlyActive][selected - 1]->onPress();
+            break;
+        } else if (!ignoreESC && key == 27 && selected == 0) {
+            menus[currentlyActive][0]->onPress();
             break;
         }
 
         if (isHorizontal) {
             if (key == KEY_RIGHT) {
-                next();
+                next(ignoreESC);
             } else if (key == KEY_LEFT) {
-                prev();
+                prev(ignoreESC);
             }
         } else {
             if (key == KEY_DOWN) {
-                next();
+                next(ignoreESC);
             } else if (key == KEY_UP) {
-                prev();
+                prev(ignoreESC);
             }
         }
 
@@ -98,6 +108,4 @@ size_t Menu::handleMenu(bool isHorizontal) {
         key = getch();
         selected = getSelected();
     }
-
-    return selected;
 }

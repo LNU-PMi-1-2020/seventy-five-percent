@@ -22,6 +22,8 @@ public:
 
     Game &operator=(Game &) = delete;
 
+    Game(const Game &) = delete;
+
     std::map<const std::string, Box *> boxes;
 
     void init();

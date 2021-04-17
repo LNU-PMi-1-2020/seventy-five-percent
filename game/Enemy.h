@@ -9,6 +9,9 @@ public:
     static Enemy &get();
 
     Enemy &operator=(Enemy &) = delete;
+
+    Enemy(const Enemy &) = delete;
+
 };
 
 #endif //SEVENTY_FIVE_PERCENT_ENEMY_H

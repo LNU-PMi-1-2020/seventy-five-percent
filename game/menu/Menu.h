@@ -20,21 +20,23 @@ public:
 
     Menu &operator=(Menu &) = delete;
 
+    Menu(const Menu &) = delete;
+
     string currentlyActive;
 
     std::map<string, std::vector<MenuOption *>> menus;
 
     void draw();
 
-    void next();
+    void next(bool ignoreESC);
 
-    void prev();
+    void prev(bool ignoreESC);
 
     void unselect();
 
     size_t getSelected();
 
-    size_t handleMenu(bool isHorizontal = false);
+    void handleMenu(bool isHorizontal = false, bool ignoreESC = true);
 };
 
 #endif //SEVENTY_FIVE_PERCENT_MENU_H

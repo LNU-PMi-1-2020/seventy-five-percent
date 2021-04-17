@@ -13,6 +13,8 @@ public:
 
     CardController &operator=(CardController &) = delete;
 
+    CardController(const CardController &) = delete;
+
     std::map<size_t , Card *> cards;
 
     void loadCards();
