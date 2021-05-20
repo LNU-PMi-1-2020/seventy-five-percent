@@ -7,6 +7,7 @@
 #include "menu/MenuOption.h"
 #include "menu/TextMenuOption.h"
 #include "menu/FuncMenuOption.h"
+#include <sstream>
 
 Game &Game::get() {
     static Game game;
@@ -86,6 +87,18 @@ void Game::drawNewGameScreen() {
     refresh();
 
     boxes["main"]->centerText("Play new game!");
+
+    boxes["card1"] = new Box("card1", boxes["main"], 3, 5, 30, 9);
+    CardController::get()[1].draw(boxes["card1"]);
+
+    boxes["card2"] = new Box("card2", boxes["main"], 34, 5, 30, 9);
+    CardController::get()[5].draw(boxes["card2"]);
+
+    boxes["card3"] = new Box("card3", boxes["main"], 65, 5, 30, 9);
+    CardController::get()[15].draw(boxes["card3"]);
+
+    boxes["card4"] = new Box("card4", boxes["main"], 96, 5, 30, 9);
+    CardController::get()[18].draw(boxes["card4"]);
 
     auto &m = Menu::get();
 

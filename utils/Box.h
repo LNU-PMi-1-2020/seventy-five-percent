@@ -35,6 +35,8 @@ public:
 
     string desc() const;
 
+    void text(const string &text, int x = 0, int y = 0);
+
     void centerText(const string &text);
 
     void verticalCenterText(int yPos, const string &text);
@@ -42,6 +44,10 @@ public:
     void drawBorder(int x = 0, int y = 0);
 
     void refresh();
+
+    int getWidth() const;
+
+    int getHeight() const;
 };
 
 

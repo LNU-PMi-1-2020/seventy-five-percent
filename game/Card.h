@@ -2,12 +2,13 @@
 #define SEVENTY_FIVE_PERCENT_CARD_H
 
 #include <iostream>
+#include "../utils/Box.h"
 
 using std::string;
 
 class Card {
 private:
-    size_t id;
+    size_t id{};
 
     string firstName;
 
@@ -17,17 +18,17 @@ private:
 
     string party;
 
-    int level;
+    int level{};
 
-    int mana;
+    int mana{};
 
-    int luck;
+    int luck{};
 
-    int strength;
+    int strength{};
 
     string description;
 
-    int price;
+    int price{};
 
 public:
     Card() = default;
@@ -35,6 +36,7 @@ public:
     Card(size_t id, string firstName, string lastName, string middleName, string party,
          int level, int mana, int luck, int strength, string description, int price);
 
+    void draw(Box *box);
 };
 
 #endif //SEVENTY_FIVE_PERCENT_CARD_H

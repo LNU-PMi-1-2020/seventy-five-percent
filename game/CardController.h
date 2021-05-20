@@ -15,7 +15,9 @@ public:
 
     CardController(const CardController &) = delete;
 
-    std::map<size_t , Card *> cards;
+    std::map<size_t, Card> cards;
+
+    Card operator[](size_t id) const;
 
     void loadCards();
 };

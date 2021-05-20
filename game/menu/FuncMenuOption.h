@@ -5,7 +5,7 @@
 
 class FuncMenuOption : public MenuOption {
 public:
-    FuncMenuOption(void (*onPress)()) {
+    explicit FuncMenuOption(void (*onPress)()) {
         f = onPress;
     }
 

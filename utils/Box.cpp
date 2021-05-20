@@ -55,6 +55,10 @@ void Box::setColor(const int color, bool is) const {
     }
 }
 
+void Box::text(const string &text, int x, int y) {
+    mvwprintw(win, y, x, text.c_str());
+}
+
 void Box::centerText(const string &text) {
     Printer::centerText(win, text.c_str());
 }
@@ -77,4 +81,12 @@ void Box::setStandout(bool is) const {
     } else {
         wattroff(win, A_STANDOUT);
     }
+}
+
+int Box::getWidth() const {
+    return getmaxx(win);
+}
+
+int Box::getHeight() const {
+    return getmaxy(win);
 }
